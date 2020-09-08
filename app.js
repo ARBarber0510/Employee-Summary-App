@@ -56,7 +56,7 @@ async function promptUser() {
                 type: "input",
                 name: "role",
                 message: "Select your role in the company:",
-                choices: ['Employee', 'Engineer', 'Manager', 'Intern']
+                choices: ['Engineer', 'Manager', 'Intern']
             }
         ])
         .then((data) => {
