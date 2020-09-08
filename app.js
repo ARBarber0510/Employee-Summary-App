@@ -12,80 +12,105 @@ const render = require("./lib/htmlRenderer");
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
-function promptUser() {
-    return inquirer.prompt([
-        // Questions for all employees
+async function promptUser() {
+
+    let teamHTML = "";
+
+    let teamNumber;
+
+    await inquirer.prompt(
+        {
+        type: "number",
+        name: "teamSize",
+        message: "Enter the number of members in your team:"
+        }
+    )
+    .then((data) => {
+        teamNumber = data.teamSize + 1;
+    });
+
+    if(teamHTML === 0){
+        console.log("Error: This team has no members...")
+        return;
+    }
+    
+
+    const questions = [
         {
             type: "input",
             name: "name",
             message: "Enter your name:"
-          },
-          {
+        },
+        {
             type: "input",
             name: "email",
             message: "Enter your email address:"
-          },
-          {
+        },
+        {
             type: "input",
             name: "role",
             message: "Select your role in the company:",
             choices: ['Employee', 'Engineer', 'Manager', 'Intern']
-          }
-    ])
+        }
+    ]
+    const managerQuestions = [
+        {
+            type: "input",
+            name: "officeNumber",
+            message: "Enter your office number:"
+        }
+    ]
 
-    switch (role) {
-        case "Manager":
-            await inquirer.prompt([
-                {
-                    type: "input",
-                    name: "officeNumber",
-                    message: "Enter your office number:"
-                }
-            ])
-        .then((data) => {
-            const manager = new Manager(name, id, email, data.officeNumber);
+    const internQuestions = [
+        {
+            type: "input",
+            name: "school",
+            message: "Enter your school name:"
+        }
+    ]
 
-            teamMember = fs.readFileSync("templates/manager.html");
+    const engineerQuestions = [
+        {
+            type: "input",
+            name: "github",
+            message: "Enter your GitHub username:"
+        }
+    ]
 
-            teamHTML = teamHTML + "\n" + eval('`' + teamMember + '`');
-        });
-        break;
 
-        case "Intern":
-            await inquirer.prompt([
-                {
-                    type: "input",
-                    name: "school",
-                    message: "Enter your school name:"
-                }
-            ])
-        .then((data) => {
-            const intern = new Intern(name, id, email, data.school);
 
-            teamMember = fs.readFileSync("templates/intern.html");
+        const employeeData = []
+        // Questions for all employees
+        const employeeAnswers = await inquirer.prompt(questions);
 
-            teamHTML = teamHTML + "\n" + eval('`' + teamMember + '`');
-        });
-        break;
+        switch (employeeAnswers.employeeRole) {
+            case "Manager": {
+                const mgrAnswers = await inquirer.prompt(managerQuestions);
+                employeeAnswers.additionalAnswers = mgrAnswers;
+                break;
+            }
+            case "Intern": {
+                const intAnswers = await inquirer.prompt(internQuestions);
+                employeeAnswers.additionalAnswers = intAnswers;
+                break;
+            }
+            case "Engineer": {
+                const engAnswers = await inquirer.prompt(engineerQuestions);
+                employeeAnswers.additionalAnswers = engAnswers;
+                break;
+            }
 
-        case "Engineer":
-            await inquirer.prompt([
-                {
-                    type: "input",
-                    name: "github",
-                    message: "Enter your GitHub username:"
-                }
-            ])
-        .then((data) => {
-            const engineer = new Intern(name, id, email, data.github);
+        }
+    employeeData.push(employeeAnswers);
 
-            teamMember = fs.readFileSync("templates/engineer.html");
+    const allEmployeeData = [];
 
-            teamHTML = teamHTML + "\n" + eval('`' + teamMember + '`');
-        });
-        break;
-    }
-    
+    employeeData.forEach(element => {
+        const
+    })
+
+
+
 }
 
 promptUser();
