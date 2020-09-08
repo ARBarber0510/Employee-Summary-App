@@ -53,7 +53,7 @@ async function promptUser() {
                 message: "Enter your email address:"
             },
             {
-                type: "input",
+                type: "list",
                 name: "role",
                 message: "Select your role in the company:",
                 choices: ['Engineer', 'Manager', 'Intern']
