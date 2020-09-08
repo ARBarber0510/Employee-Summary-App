@@ -10,8 +10,11 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+// Write code to use inquirer to gather information about the development team members,
+// and to create objects for each team member (using the correct classes as blueprints!)
 function promptUser() {
     return inquirer.prompt([
+        // Questions for all employees
         {
             type: "input",
             name: "name",
@@ -27,16 +30,65 @@ function promptUser() {
             name: "role",
             message: "Select your role in the company:",
             choices: ['Employee', 'Engineer', 'Manager', 'Intern']
-          },
-          {
-            type: "input",
-            name: "usage",
-            message: "Please provide instructions & examples for this application in use:"
-          } 
+          }
     ])
+
+    switch (role) {
+        case "Manager":
+            await inquirer.prompt([
+                {
+                    type: "input",
+                    name: "officeNumber",
+                    message: "Enter your office number:"
+                }
+            ])
+        .then((data) => {
+            const manager = new Manager(name, id, email, data.officeNumber);
+
+            teamMember = fs.readFileSync("templates/manager.html");
+
+            teamHTML = teamHTML + "\n" + eval('`' + teamMember + '`');
+        });
+        break;
+
+        case "Intern":
+            await inquirer.prompt([
+                {
+                    type: "input",
+                    name: "school",
+                    message: "Enter your school name:"
+                }
+            ])
+        .then((data) => {
+            const intern = new Intern(name, id, email, data.school);
+
+            teamMember = fs.readFileSync("templates/intern.html");
+
+            teamHTML = teamHTML + "\n" + eval('`' + teamMember + '`');
+        });
+        break;
+
+        case "Engineer":
+            await inquirer.prompt([
+                {
+                    type: "input",
+                    name: "github",
+                    message: "Enter your GitHub username:"
+                }
+            ])
+        .then((data) => {
+            const engineer = new Intern(name, id, email, data.github);
+
+            teamMember = fs.readFileSync("templates/engineer.html");
+
+            teamHTML = teamHTML + "\n" + eval('`' + teamMember + '`');
+        });
+        break;
+    }
+    
 }
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
+
+promptUser();
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
