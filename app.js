@@ -38,31 +38,36 @@ async function promptUser() {
     for(i = 1; i < teamNumber; i++ ) {
         let name;
         let id;
-        let title;
+        let role;
         let email;
 
         await inquirer.prompt([
             {
                 type: "input",
                 name: "name",
-                message: "Enter your name:"
+                message: "Enter employee's name:"
             },
             {
                 type: "input",
                 name: "email",
-                message: "Enter your email address:"
+                message: "Enter employee's email address:"
+            },
+            {
+                type: "input",
+                name: "id",
+                message: "Enter employee's company Id:"
             },
             {
                 type: "list",
                 name: "role",
-                message: "Select your role in the company:",
+                message: "Select employee's role in the company:",
                 choices: ['Engineer', 'Manager', 'Intern']
-            }
+            },
         ])
         .then((data) => {
             name = data.name;
             id = data.id;
-            title = data.title;
+            role = data.role;
             email = data.email;
         });
 
@@ -73,7 +78,7 @@ async function promptUser() {
                 {
                 type: "input",
                 name: "officeNumber",
-                message: "Enter your office number:"
+                message: "Enter manager's office number:"
                 }
             ])
             .then ((data) => {
@@ -88,7 +93,7 @@ async function promptUser() {
                     {
                     type: "input",
                     name: "schoolName",
-                    message: "Enter the name of your school:"
+                    message: "Enter the name of intern's school:"
                     }
                 ])
                 .then ((data) => {
@@ -103,7 +108,7 @@ async function promptUser() {
                     {
                     type: "input",
                     name: "githubName",
-                    message: "Enter your GitHub username:"
+                    message: "Enter engineer's GitHub username:"
                     }
                 ])
                 .then ((data) => {
@@ -119,7 +124,7 @@ async function promptUser() {
 
     teamHTML = eval('`' + mainHTML +'`');
 
-    fs.writeFile("output/team.html", teamHTML, function(err) {
+    fs.writeFile("team.html", teamHTML, function(err) {
         if (err) {
             return console.log(err);
         }
