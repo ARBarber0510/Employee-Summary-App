@@ -10,130 +10,139 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-// Write code to use inquirer to gather information about the development team members,
-// and to create objects for each team member (using the correct classes as blueprints!)
-async function promptUser() {
-    console.log("Welcome!");
 
-    let teamHTML = "";
-
-    let teamNumber;
-
-    await inquirer.prompt(
-        {
-        type: "number",
-        name: "teamSize",
-        message: "Enter the number of members in your team:"
+// All employee questions
+const employeeQuestions = [
+    {
+        type: "input",
+        name: "name",
+        message: "Enter employee's name:"
+    },
+    {
+        type: "input",
+        name: "email",
+        message: "Enter employee's email address:"
+    },
+    {
+        type: "input",
+        name: "id",
+        message: "Enter employee's company Id:"
+    },
+    {
+        type: "list",
+        name: "role",
+        message: "Select employee's role in the company:",
+        choices: ['Engineer', 'Manager', 'Intern']
+    }
+]
+// Manager specific question
+const managerQuestion = [
+    {
+        type: "input",
+        name: "officeNumber",
+        message: "Enter manager's office number:"
         }
-    )
-    .then((data) => {
-        teamNumber = data.teamSize + 1;
-    });
+]
 
-    if(teamHTML === 0){
-        console.log("Error: This team has no members...")
-        return;
+// Intern specific question
+const internQuestion = [
+    {
+        type: "input",
+        name: "schoolName",
+        message: "Enter the name of intern's school:"
+        }
+]
+
+// Engingeer specific question
+const engineerQuestion = [
+    {
+        type: "input",
+        name: "githubName",
+        message: "Enter engineer's GitHub username:"
+        }
+]
+
+// Additional employees question
+const addEmployee = [
+    {
+        type: "confirm",
+        name: "addEmployees",
+        message: "Would you like to add more employees?"
+        }
+]
+
+// Async function to prompt user to answer questions on the command line.
+async function promptUser() {
+    try { 
+
+        // Empty array to hold employee data objects
+            const employees = [];
+
+            // Setting variable for additional employees to true.
+            let addEmployees = true;
+
+                while (addEmployees) {
+
+                    // Awaiting the results of the inquirer prompt and storing in the answer constant
+                    const answer = await inquirer.prompt(employeeQuestions)
+                    
+                    // Run switch case based on the answers provided for each employee
+                    switch(answer.role){
+                        
+                        case "Manager": {
+                            const managerAnswer = await inquirer.prompt(managerQuestion);
+                            const newManager = new Manager(answer.name, answer.id, answer.email, managerAnswer.officeNumber)
+                            employees.push(newManager);
+                            break;
+                        };
+                         
+                        case "Intern": {
+                            const internAnswer = await inquirer.prompt(internQuestion);
+                            const newIntern = new Intern(answer.name, answer.id, answer.email, internAnswer.schoolName)
+                            employees.push(newIntern);
+                            break;    
+                        };
+                    
+                        case "Engineer": {
+                            const engineerAnswer = await inquirer.prompt(engineerQuestion);
+                            const newEngineer = new Engineer(answer.name, answer.id, answer.email, engineerAnswer.githubName)
+                            employees.push(newEngineer);
+                            break;
+                        }
+                    }
+                    const addEmployeeObject = await inquirer.prompt(addEmployee);
+
+                    addEmployees = addEmployeeObject.more;
+                };     
+                    
+                return employees;
+        }
+
+        catch(err) {
+            console.log(err);
+        }
+    }
+
+
+    async function buildHTML() {
+
+
+        const employees = await promptUser();
+    
+        const outputHTML = await render(employees)
+    
+        fs.writeFile("./templates/team.html", outputHTML, function (err) {
+            if (err) {
+                return console.log(err);
+            }
+            else {
+                console.log("HTML Generated");
+            }
+        });
     }
     
-    for(i = 1; i < teamNumber; i++ ) {
-        let name;
-        let id;
-        let role;
-        let email;
+    buildHTML();
 
-        await inquirer.prompt([
-            {
-                type: "input",
-                name: "name",
-                message: "Enter employee's name:"
-            },
-            {
-                type: "input",
-                name: "email",
-                message: "Enter employee's email address:"
-            },
-            {
-                type: "input",
-                name: "id",
-                message: "Enter employee's company Id:"
-            },
-            {
-                type: "list",
-                name: "role",
-                message: "Select employee's role in the company:",
-                choices: ['Engineer', 'Manager', 'Intern']
-            },
-        ])
-        .then((data) => {
-            name = data.name;
-            id = data.id;
-            role = data.role;
-            email = data.email;
-        });
-
-        switch(role){
-            
-            case "Manager":
-            await inquirer.prompt([
-                {
-                type: "input",
-                name: "officeNumber",
-                message: "Enter manager's office number:"
-                }
-            ])
-            .then ((data) => {
-                const manager = new Manager(name, id, email, data.officeNumber);
-                teamMember = fs.readFileSync("templates/manager.html");
-                teamHTML = teamHTML + "\n" + eval('`' + teamMember + '`');
-            });
-            break;
-            
-            case "Intern":
-                await inquirer.prompt([
-                    {
-                    type: "input",
-                    name: "schoolName",
-                    message: "Enter the name of intern's school:"
-                    }
-                ])
-                .then ((data) => {
-                    const intern = new Intern(name, id, email, data.schoolName);
-                    teamMember = fs.readFileSync("templates/intern.html");
-                    teamHTML = teamHTML + "\n" + eval('`' + teamMember + '`');
-                });
-            break;
-            
-            case "Engineer":
-                await inquirer.prompt([
-                    {
-                    type: "input",
-                    name: "githubName",
-                    message: "Enter engineer's GitHub username:"
-                    }
-                ])
-                .then ((data) => {
-                    const engineer = new Engineer(name, id, email, data.githubName);
-                    teamMember = fs.readFileSync("templates/engineer.html");
-                    teamHTML = teamHTML + "\n" + eval('`' + teamMember + '`');
-                });
-            break;
-        };
-    }
-
-    const mainHTML = fs.readFileSync("templates/main.html")
-
-    teamHTML = eval('`' + mainHTML +'`');
-
-    fs.writeFile("team.html", teamHTML, function(err) {
-        if (err) {
-            return console.log(err);
-        }
-
-        console.log("Successfully wrote team.html file");
-    });
-}
-
-promptUser();
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
