@@ -82,7 +82,7 @@ const moreEmpQuestion = [
             // Setting variable for additional employees to true.
             let addEmployees = true;
 
-                while (addEmployees) {
+            while (addEmployees) {
 
                     // Awaiting the results of the inquirer prompt and storing in the answer constant
                     const answer = await inquirer.prompt(employeeQuestions)
@@ -93,7 +93,11 @@ const moreEmpQuestion = [
                         
                         case "Manager": {
                             const managerAnswer = await inquirer.prompt(managerQuestion);
-                            const newManager = new Manager(answer.name, answer.id, answer.email, managerAnswer.officeNumber)
+                            const newManager = new Manager(
+                                answer.name, 
+                                answer.id, 
+                                answer.email, 
+                                managerAnswer.officeNumber)
                             employees.push(newManager);
                             restartPrompt();
                             break;
@@ -101,7 +105,11 @@ const moreEmpQuestion = [
                          
                         case "Intern": {
                             const internAnswer = await inquirer.prompt(internQuestion);
-                            const newIntern = new Intern(answer.name, answer.id, answer.email, internAnswer.schoolName)
+                            const newIntern = new Intern(
+                                answer.name, 
+                                answer.id, 
+                                answer.email, 
+                                internAnswer.schoolName)
                             employees.push(newIntern);
                             restartPrompt();
                             break;    
@@ -109,12 +117,18 @@ const moreEmpQuestion = [
                     
                         case "Engineer": {
                             const engineerAnswer = await inquirer.prompt(engineerQuestion);
-                            const newEngineer = new Engineer(answer.name, answer.id, answer.email, engineerAnswer.githubName)
+                            const newEngineer = new Engineer(
+                                answer.name, 
+                                answer.id, 
+                                answer.email, 
+                                engineerAnswer.githubName)
                             employees.push(newEngineer);
                             restartPrompt();
                             break;
                         }
                     }
+
+
                     const addEmployeeObject = await inquirer.prompt(moreEmpQuestion);
 
                     addEmployees = addEmployeeObject.more;
@@ -153,7 +167,7 @@ const moreEmpQuestion = [
     
         const outputHTML = await render(employees)
     
-        fs.writeFile("./templates/team.html", outputHTML, function (err) {
+        fs.writeFile("./templates/team.html", outputHTML, outPath, function (err) {
             if (err) {
                 return console.log(err);
             }
