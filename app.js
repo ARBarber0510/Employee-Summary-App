@@ -167,7 +167,7 @@ const moreEmpQuestion = [
     
         const outputHTML = await render(employees)
     
-        fs.writeFile("./templates/team.html", outputHTML, outPath, function (err) {
+        fs.writeFile("./templates/team.html", outputHTML, outputPath, function (err) {
             if (err) {
                 return console.log(err);
             }
