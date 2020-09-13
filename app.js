@@ -146,7 +146,7 @@ const moreEmpQuestion = [
     }
 
     // Build team.html based off the information provided.
-    async function buildHTML() {
+    async function generateHTML() {
 
 
         const employees = await promptUser();
@@ -163,5 +163,5 @@ const moreEmpQuestion = [
         });
     }
     
-buildHTML();
+generateHTML();
 
