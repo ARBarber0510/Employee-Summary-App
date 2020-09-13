@@ -73,10 +73,10 @@ const moreEmpQuestion = [
 ]
 
 // Async function to prompt user to answer questions on the command line.
-async function promptUser() {
-    try { 
+    async function promptUser() {
+        try { 
 
-        // Empty array to hold employee data objects
+            // Empty array to hold employee data objects
             const employees = [];
 
             // Setting variable for additional employees to true.
@@ -121,13 +121,14 @@ async function promptUser() {
 
                 };     
                     
-                return employees;
+            return employees;
         }
 
         catch(err) {
             console.log(err);
         };
     };
+
 
     // Attempted to restart the prompt to add more employees
     function restartPrompt() {
@@ -162,5 +163,5 @@ async function promptUser() {
         });
     }
     
-    buildHTML();
+buildHTML();
 
