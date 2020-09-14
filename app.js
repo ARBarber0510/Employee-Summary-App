@@ -10,6 +10,8 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
+// Empty array to hold employee data objects
+let employees = [];
 
 // All employee questions
 const employeeQuestions = [
@@ -65,24 +67,15 @@ const engineerQuestion = [
 // Additional employees question
 const moreEmpQuestion = [
     {
-        type: "list",
+        type: "confirm",
         name: "addEmployees",
         message: "Would you like to add more employees?",
-        choices: ["Yes", "No"]
         }
 ]
 
 // Async function to prompt user to answer questions on the command line.
     async function promptUser() {
         try { 
-
-            // Empty array to hold employee data objects
-            const employees = [];
-
-            // Setting variable for additional employees to true.
-            let addEmployees = true;
-
-            while (addEmployees) {
 
                     // Awaiting the results of the inquirer prompt and storing in the answer constant
                     const answer = await inquirer.prompt(employeeQuestions)
@@ -91,7 +84,7 @@ const moreEmpQuestion = [
                     // Pushing answers object into into addEmployeeObject
                     switch(answer.role){
                         
-                        case "Manager": {
+                        case "Manager": 
                             const managerAnswer = await inquirer.prompt(managerQuestion);
                             const newManager = new Manager(
                                 answer.name, 
@@ -99,11 +92,10 @@ const moreEmpQuestion = [
                                 answer.email, 
                                 managerAnswer.officeNumber)
                             employees.push(newManager);
-                            restartPrompt();
                             break;
-                        };
+                        
                          
-                        case "Intern": {
+                        case "Intern": 
                             const internAnswer = await inquirer.prompt(internQuestion);
                             const newIntern = new Intern(
                                 answer.name, 
@@ -111,11 +103,10 @@ const moreEmpQuestion = [
                                 answer.email, 
                                 internAnswer.schoolName)
                             employees.push(newIntern);
-                            restartPrompt();
                             break;    
-                        };
+                        
                     
-                        case "Engineer": {
+                        case "Engineer": 
                             const engineerAnswer = await inquirer.prompt(engineerQuestion);
                             const newEngineer = new Engineer(
                                 answer.name, 
@@ -123,51 +114,33 @@ const moreEmpQuestion = [
                                 answer.email, 
                                 engineerAnswer.githubName)
                             employees.push(newEngineer);
-                            restartPrompt();
                             break;
-                        }
+                        
                     }
 
 
-                    const addEmployeeObject = await inquirer.prompt(moreEmpQuestion);
+                    const moreEmployeeObject = await inquirer.prompt(moreEmpQuestion);
+                        if (moreEmployeeObject.addEmployees) {
+                            promptUser();
+                        }
+                        else {
+                            generateHTML();
+                        }
 
-                    addEmployees = addEmployeeObject.more;
+            }
 
-                };     
-                    
-            return employees;
-        }
-
-        catch(err) {
-            console.log(err);
-        };
+            catch(err) {
+                console.log(err);
+            };
     };
 
 
-    // Attempted to restart the prompt to add more employees
-    function restartPrompt() {
-        inquirer.prompt(employeeQuestions.moreEmpQuestion).then(answer => {
-            switch (answer.role) {
-                case "Yes":
-                    promptUser();
-                    break;
-    
-                case "No":
-                    buildHTML();
-                    break;
-            }
-        });
-    }
-
     // Build team.html based off the information provided.
     async function generateHTML() {
-
-
-        const employees = await promptUser();
     
         const outputHTML = await render(employees)
     
-        fs.writeFile("./templates/team.html", outputHTML, outputPath, function (err) {
+        fs.writeFile("./templates/team.html", outputHTML, function (err) {
             if (err) {
                 return console.log(err);
             }
@@ -176,6 +149,7 @@ const moreEmpQuestion = [
             }
         });
     }
-    
-generateHTML();
+
+
+    promptUser();
 
